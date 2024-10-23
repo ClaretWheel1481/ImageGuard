@@ -1,5 +1,6 @@
-# generalImageClassification
-[toc]
+# ImageGuard
+
+forked from [xqtbox/generalImageClassification](https://github.com/xqtbox/generalImageClassification)
 
 本项目是通用的图像分类项目，并以涉黄、涉政、涉恐和普通图片4分类为例。图像违规质检本质是图像分类，所以关键点在于两个：
 

@@ -5,19 +5,8 @@ import timeit
 import flask as flask
 import predictWithMyModel
 
-##### flask初始化
+##### init flask
 ImageIllehalDetectionApp = flask.Flask(__name__)  # __name__代表当前的python文件。把当前的python文件当做一个服务启动
-
-
-#### Hello World !
-@ImageIllehalDetectionApp.route("/helloWorld")
-def helloWorld():
-    """
-    当用户访问这个端口时，返回Hello World !
-    :return:
-    """
-    return "图像内容违规检测，涉黄、涉政、涉恐，Hello World ! "
-
 
 #### 图片检测的接口
 @ImageIllehalDetectionApp.route("/image/detection", methods=['post'])
@@ -35,11 +24,11 @@ def imageDetection():
         return json.dumps(ret, ensure_ascii=True)
 
 
-    startTime = timeit.default_timer()  # 记录开始时间
-    code, msg, predictedClass, probability = predictWithMyModel.predictWithImageBase64(imageBase64String) # 查询数据
-    endTime = timeit.default_timer()  # 记录 结束时间
-    print('-------------------  flask图片检测时间：', endTime - startTime, 's -------------------')
-    logger.info('------------------- flask图片检测时间：{}s ------------------- '.format(endTime - startTime))
+    # startTime = timeit.default_timer()
+    code, msg, predictedClass, probability = predictWithMyModel.predictWithImageBase64(imageBase64String)
+    # endTime = timeit.default_timer()
+    # print('-------------------  flask图片检测时间：', endTime - startTime, 's -------------------')
+    # logger.info('------------------- flask图片检测时间：{}s ------------------- '.format(endTime - startTime))
 
     # 定义flask返回值ret的数据结构
     if code == '00':
@@ -60,15 +49,10 @@ def imageDetection():
         logger.info(ret)
         return json.dumps(ret, ensure_ascii=True)
 
-
-
-
-
 if __name__ == '__main__':
     # 配置日志
     logger = logging.getLogger(__name__)
     logging.basicConfig(filename='./log/log_my_image.log', level=logging.INFO, format='%(asctime)s - %(filename)s - %(levelname)s - %(message)s')
-
 
     ##### flask初始化
     ImageIllehalDetectionApp.run(

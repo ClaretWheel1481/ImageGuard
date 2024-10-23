@@ -1,11 +1,6 @@
 # -*- coding: utf-8 -*-
 import base64
 
-
-
-
-
-
 def Image2Base64(imagePath = '../data/validation/neutral/[www.google.com][1989].jpg'):
     '''
     :desc 用户给出图片路径，将其转化为bash64形式
@@ -18,8 +13,6 @@ def Image2Base64(imagePath = '../data/validation/neutral/[www.google.com][1989].
         print(Base64)
     return Base64
 
-
-
 def base64ToImage(base64String, imagePath ):
     """
     decrib ：用户发过来图片的bash64形式字符串，函数读取后返回出去。
@@ -31,9 +24,6 @@ def base64ToImage(base64String, imagePath ):
     with open(imagePath,'wb') as f:
         f.write(imageData)
     return imagePath
-
-
-
 
 if __name__ == '__main__':
     Base64String = Image2Base64(imagePath = '../data/train/neutral/[www.google.com][219].jpg')

@@ -28,9 +28,6 @@ endtime = timeit.default_timer()
 print("模型加载完成，用时为：", endtime - starttime)
 logger.info("模型加载完成，用时为：%s", endtime - starttime)
 
-
-
-
 def predictWithImagePath(img_path):
     """
     根据输入图像path，来分析图像，并作出分类。
@@ -100,7 +97,6 @@ def predictWithImageBase64(imageBase64String):
     logger.info('predicted_class:%s', predicted_class)
 
     return "00", "成功",predicted_class,preds[0][predicted_class_indices[0]]
-
 
 if __name__ == '__main__':
     img_path_list = [

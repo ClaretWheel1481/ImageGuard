@@ -19,14 +19,10 @@ nb_validation_samples = 80
 epochs = 20
 batch_size = 32
 
-
 if K.image_data_format() == 'channels_first':
     input_shape = (3, img_width, img_height)
 else:
     input_shape = (img_width, img_height, 3)
-
-
-
 
 # 构建不带分类器的预训练模型
 base_model = InceptionV3(weights='imagenet', include_top=False)
@@ -71,8 +67,9 @@ train_generator = train_datagen.flow_from_directory( # 使用.flow_from_director
     class_mode='categorical',
     # classes = ["neutral","political","porn","terrorism"]
 )
-print(train_generator.class_indices) #{'neutral': 0, 'political': 1, 'porn': 2, 'terrorism': 3}
 
+#{'neutral': 0, 'political': 1, 'porn': 2, 'terrorism': 3}
+print(train_generator.class_indices)
 
 validation_generator = valid_datagen.flow_from_directory(
     validation_data_dir,
@@ -91,10 +88,8 @@ model.fit_generator(
     validation_data = validation_generator,
     validation_steps = nb_validation_samples // batch_size)
 
-
-
 ## 保存模型
-model.save('data/modelFile/my_model.h5')  # 创建 HDF5 文件 'my_model01.h5'
+model.save('model/image_guard_v1.h5')  # 创建 HDF5 文件 'image_guard_v1.h5'
 print("保存模型成功。")
 
 # del model  # 删除现有模型
@@ -102,7 +97,6 @@ print("保存模型成功。")
 # 返回一个编译好的模型
 # 与之前那个相同
 ### model = load_model('data/modelFile/my_model01.h5')
-
 
 ### 使用模型预测：
 print("使用模型预测：-----------")

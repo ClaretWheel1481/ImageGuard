@@ -1,7 +1,7 @@
 from keras.preprocessing.image import ImageDataGenerator
 from keras.preprocessing import image
 from keras.models import load_model
-from keras.optimizers import RMSprop
+from tensorflow.keras.optimizers import RMSprop
 from keras import backend as K
 import numpy as np
 import timeit
@@ -10,12 +10,10 @@ ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 print("本py用来构建在老模型的基础上再训练。")
 
-
-
 ### 超参数：
 # dimensions of InceptionV3.
-old_model_path = "data/modelFile/my_model02.h5" # 你要在哪个模型的基础上训练？
-new_model_path = "data/modelFile/my_model03.h5" # 新模型存储到哪里？
+old_model_path = "model/Image_Guard_01.h5" # 你要在哪个模型的基础上训练？
+new_model_path = "model/Image_Guard_Final.h5" # 新模型存储到哪里？
 img_width, img_height = 224, 224 #
 train_data_dir = 'data/train'
 validation_data_dir = 'data/validation'
@@ -25,7 +23,6 @@ epochs = 10 # 图像的轮数
 batch_size = 32 # 每个batch32张图片
 learning_rate = 0.0001 # 如果在原有图片的基础上再训练，为防治过拟合，建议设置小一点：0.0001
                        # 如果是新的图片数据，且比较重要，建议设置:0.001 甚至更高：0.002
-
 
 if K.image_data_format() == 'channels_first':
     input_shape = (3, img_width, img_height)
