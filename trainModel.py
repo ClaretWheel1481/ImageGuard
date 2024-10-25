@@ -1,3 +1,4 @@
+import requests
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -26,8 +27,8 @@ data_transforms = {
     ]),
 }
 
-# 读取、构成数据集
-train_dataset = datasets.ImageFolder('data/train', transform=data_transforms['train'], loader=pil_loader)
+# 加载数据集
+train_dataset = datasets.ImageFolder('dataset/', transform=data_transforms['train'], loader=pil_loader)
 val_dataset = datasets.ImageFolder('data/validation', transform=data_transforms['val'], loader=pil_loader)
 
 train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=32, shuffle=True)
@@ -110,22 +111,22 @@ torch.save(model.state_dict(), 'model/image_guard_v1.pth')
 print("Model saved.")
 
 # 图像测试预测
-# def predict_image(image_path, model, class_names):
-#     model.eval()
-#     img = Image.open(image_path)
-#     transform = transforms.Compose([
-#         transforms.Resize((299, 299)),
-#         transforms.ToTensor(),
-#         transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
-#     ])
-#     img = transform(img).unsqueeze(0)
-#     img = img.to(device)
-#
-#     with torch.no_grad():
-#         outputs = model(img)
-#         _, predicted = torch.max(outputs, 1)
-#
-#     print(f'预测结果: {class_names[predicted[0]]}')
-#
-# model.load_state_dict(torch.load('model/image_guard_v1.pth', weights_only=True))
-# predict_image('data/validation/porn/[www.google.com][10382].jpg', model, class_names)
+def predict_image(image_path, model, class_names):
+    model.eval()
+    img = Image.open(image_path)
+    transform = transforms.Compose([
+        transforms.Resize((299, 299)),
+        transforms.ToTensor(),
+        transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+    ])
+    img = transform(img).unsqueeze(0)
+    img = img.to(device)
+
+    with torch.no_grad():
+        outputs = model(img)
+        _, predicted = torch.max(outputs, 1)
+
+    print(f'预测结果: {class_names[predicted[0]]}')
+
+model.load_state_dict(torch.load('model/image_guard_v1.pth', weights_only=True))
+predict_image('data/validation/porn/[www.google.com][10382].jpg', model, class_names)
