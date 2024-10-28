@@ -3,6 +3,8 @@ import requests
 from concurrent.futures import ThreadPoolExecutor
 from urllib.parse import urlparse
 
+# 多线程下载数据集中的图片
+
 def create_directory(path):
     if not os.path.exists(path):
         os.makedirs(path)
@@ -23,7 +25,7 @@ def download_dataset(urls_file, save_dir):
     create_directory(save_dir)
     with open(urls_file, 'r') as f:
         urls = f.read().splitlines()
-    with ThreadPoolExecutor(max_workers=10) as executor:
+    with ThreadPoolExecutor(max_workers=100) as executor:
         for url in urls:
             executor.submit(download_image, url, save_dir)
 
