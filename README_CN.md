@@ -11,9 +11,9 @@ forked from [xqtbox/generalImageClassification](https://github.com/xqtbox/genera
 ## 1 数据准备
 
 为了达到特定类别的分类，准备相应的图片数据，
-- 1 开源的数据集
-- 2 自己爬取数据
-- 3 利用特定的网站（爬虫），帮你下载数据
+1. 开源的数据集
+2. 自己爬取数据
+3. 利用特定的网站（爬虫），帮你下载数据
 
 ### 1.1 开源数据集
 

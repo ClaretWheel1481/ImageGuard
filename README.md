@@ -3,7 +3,7 @@ English | [简体中文](./README_CN.md)
 
 forked from [xqtbox/generalImageClassification](https://github.com/xqtbox/generalImageClassification)
 
-This project is a generalized image classification project, and takes pornographic, political, terrorist and general pictures 4 classifications as examples. The essence of image violation QC is image classification, so the key points are two:
+This project is a generalized image classification project, and takes 'porn', 'political', 'terrorist' and 'neutral' pictures 4 classifications as examples. The essence of image violation QC is image classification, so the key points are two:
 
 1. data preparation for image classification;
 2. image classification model selection, training;
@@ -11,9 +11,9 @@ This project is a generalized image classification project, and takes pornograph
 ## 1 Data Preparation
 
 In order to achieve the categorization of a specific category, prepare the corresponding image data, the
-- 1 Open source dataset
-- 2 Crawling the data yourself
-- 3 Utilize a specific website (crawler) that will download the data for you.
+1. Open source dataset
+2. Crawling the data yourself
+3. Utilize a specific website (crawler) that will download the data for you.
 
 ### 1.1 Open Source Datasets
 
