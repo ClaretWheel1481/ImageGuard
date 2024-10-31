@@ -3,8 +3,8 @@ import requests
 from concurrent.futures import ThreadPoolExecutor
 from urllib.parse import urlparse
 
-# 多线程下载数据集中的图片
-
+# 多线程下载数据集图片
+# 创建文件夹
 def create_directory(path):
     if not os.path.exists(path):
         os.makedirs(path)
