@@ -61,27 +61,6 @@ class ImageGuard(nn.Module):
     def __init__(self):
         super(ImageGuard, self).__init__()
 
-        # TODO: Inception V3
-        # self.base_model = models.inception_v3(weights=models.Inception_V3_Weights.IMAGENET1K_V1)
-
-        # 辅助逻辑
-        # self.base_model.aux_logits = False
-        # self.base_model.fc = nn.Sequential(
-        #     nn.Linear(self.base_model.fc.in_features, 512),
-        #     nn.ReLU(),
-        #     nn.Linear(512, 2),
-        #     nn.Softmax(dim=1)
-        # )
-
-        # TODO: DenseNet201
-        # self.base_model = models.densenet201(weights=models.DenseNet201_Weights.IMAGENET1K_V1)
-        # self.base_model.classifier = nn.Sequential(
-        #     nn.Linear(self.base_model.classifier.in_features, 512),
-        #     nn.ReLU(),
-        #     nn.Linear(512, 2),
-        #     nn.Softmax(dim=1)
-        # )
-
         # RESNET50
         self.base_model = models.resnet50(weights=models.ResNet50_Weights.IMAGENET1K_V1)
         self.base_model.fc = nn.Sequential(
@@ -155,7 +134,9 @@ model = model.to(device)
 # 训练
 print("开始训练")
 print("-" * 20)
-model = train_model(model, criterion, optimizer, num_epochs=20)
+# 训练轮数
+epochs = 20
+model = train_model(model, criterion, optimizer, epochs)
 if not os.path.exists('model'):
     os.makedirs('model')
 torch.save(model.state_dict(), 'model/image_guard_v1.pth')
