@@ -67,7 +67,8 @@ class ImageGuard(nn.Module):
             nn.Linear(self.base_model.fc.in_features, 512),
             nn.ReLU(),
             nn.Linear(512, 2),
-            nn.Softmax(dim=1)
+            # TODO: 交叉熵损失函数已经包含softmax
+            # nn.Softmax(dim=1)
         )
 
     def forward(self, x):
@@ -79,7 +80,9 @@ model = ImageGuard()
 criterion = nn.CrossEntropyLoss()
 
 # 优化器
-optimizer = optim.RMSprop(model.parameters(), lr=0.002)
+# TODO: Adam优化器相对更稳定，RMSprop需要控制学习率
+# optimizer = optim.Adam(model.parameters(), lr=0.002)
+optimizer = optim.RMSprop(model.parameters(), lr=0.002, weight_decay=1e-5)
 
 # 训练模型
 def train_model(model, criterion, optimizer, num_epochs):

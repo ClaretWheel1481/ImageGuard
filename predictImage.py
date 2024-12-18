@@ -20,5 +20,6 @@ def predict_image(image_path, model_name, classes):
         _, predicted = torch.max(outputs, 1)
     print(f'预测结果: {classes[predicted[0]]}')
 
+# TODO: 待修改
 model.load_state_dict(torch.load('model/image_guard_v1.pth', weights_only=True))
 predict_image('data/validation/porn/[www.google.com][10382].jpg', model, class_names)
