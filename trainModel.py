@@ -8,6 +8,7 @@ from tqdm import tqdm
 from torch.utils.data import DataLoader
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 
+# FIXME：目前存在严重的数据集不平衡问题，待解决!!!
 # 自定义ImageFolder类以跳过无效图像
 class CustomImageFolder(datasets.ImageFolder):
     def __getitem__(self, index):
@@ -49,6 +50,7 @@ data_transforms = {
 train_dataset = CustomImageFolder('dataset', transform=data_transforms['train'], loader=pil_loader)
 val_dataset = CustomImageFolder('data/validation', transform=data_transforms['val'], loader=pil_loader)
 
+# TODO: 根据显存大小调整Batch_size
 train_loader = DataLoader(train_dataset, batch_size=16, shuffle=True)
 val_loader = DataLoader(val_dataset, batch_size=16, shuffle=False)
 
@@ -67,7 +69,8 @@ class ImageGuard(nn.Module):
             nn.Linear(self.base_model.fc.in_features, 512),
             nn.ReLU(),
             nn.Linear(512, 2),
-            # TODO: 交叉熵损失函数已经包含softmax
+            nn.Sigmoid()
+            # TODO: 目前只有两种分类，使用Sigmoid better than Softmax
             # nn.Softmax(dim=1)
         )
 
@@ -80,9 +83,9 @@ model = ImageGuard()
 criterion = nn.CrossEntropyLoss()
 
 # 优化器
-# TODO: Adam优化器相对更稳定，RMSprop需要控制学习率
-# optimizer = optim.Adam(model.parameters(), lr=0.002)
-optimizer = optim.RMSprop(model.parameters(), lr=0.002, weight_decay=1e-5)
+# TODO: Adam优化器相对更稳定，RMSprop需要控制学习率，未来调优
+optimizer = optim.Adam(model.parameters(), lr=0.002)
+# optimizer = optim.RMSprop(model.parameters(), lr=0.002, weight_decay=1e-5)
 
 # 训练模型
 def train_model(model, criterion, optimizer, num_epochs):
