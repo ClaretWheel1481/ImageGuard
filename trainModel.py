@@ -31,18 +31,20 @@ def pil_loader(path):
         print(f"Failed to load image {path}: {e}")
         return None
 
+# TODO: 计算图片标准差、均值
+
 # 数据预处理
 data_transforms = {
     'train': transforms.Compose([
-        transforms.Resize((299, 299)),
+        transforms.Resize(299),
+        transforms.RandomResizedCrop(299, scale=(0.8, 1.0), ratio=(3/4, 4/3)),
         transforms.RandomHorizontalFlip(),
         transforms.ToTensor(),
-        transforms.Normalize((0.4914, 0.4822,0.4465), (0.2023, 0.1994, 0.2010))
     ]),
     'val': transforms.Compose([
-        transforms.Resize((299, 299)),
+        transforms.Resize(299),
+        transforms.CenterCrop(299),
         transforms.ToTensor(),
-        transforms.Normalize((0.4914, 0.4822,0.4465), (0.2023, 0.1994, 0.2010))
     ]),
 }
 
@@ -68,9 +70,9 @@ class ImageGuard(nn.Module):
         self.base_model.fc = nn.Sequential(
             nn.Linear(self.base_model.fc.in_features, 512),
             nn.ReLU(),
+            nn.Dropout(0.5),
             nn.Linear(512, 2),
-            nn.Sigmoid()
-            # TODO: 目前只有两种分类，使用Sigmoid better than Softmax
+            # TODO: 目前只有两种分类，不使用Softmax
             # nn.Softmax(dim=1)
         )
 
