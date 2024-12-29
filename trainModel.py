@@ -36,14 +36,13 @@ def pil_loader(path):
 # 数据预处理
 data_transforms = {
     'train': transforms.Compose([
-        transforms.Resize(299),
-        transforms.RandomResizedCrop(299, scale=(0.8, 1.0), ratio=(3/4, 4/3)),
+        transforms.Resize(1099),
+        transforms.RandomResizedCrop(1099, scale=(0.8, 1.0), ratio=(3/4, 4/3)),
         transforms.RandomHorizontalFlip(),
         transforms.ToTensor(),
     ]),
     'val': transforms.Compose([
-        transforms.Resize(299),
-        transforms.CenterCrop(299),
+        transforms.Resize(1099),
         transforms.ToTensor(),
     ]),
 }
@@ -135,17 +134,18 @@ def validate_model(model):
 
     print(f"correct: {corrects/len(val_dataset)}")
 
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-print(f"训练模式:{device}")
-model = model.to(device)
+if __name__ == "__main__":
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    print(f"训练模式:{device}")
+    model = model.to(device)
 
-# 训练
-print("开始训练")
-print("-" * 20)
-# 训练轮数
-epochs = 20
-model = train_model(model, criterion, optimizer, epochs)
-if not os.path.exists('model'):
-    os.makedirs('model')
-torch.save(model.state_dict(), 'model/image_guard_v1.pth')
-print("Model saved.")
+    # 训练
+    print("开始训练")
+    print("-" * 20)
+    # 训练轮数
+    epochs = 10
+    model = train_model(model, criterion, optimizer, epochs)
+    if not os.path.exists('model'):
+        os.makedirs('model')
+    torch.save(model.state_dict(), 'model/image_guard_v2.pth')
+    print("Model saved.")
