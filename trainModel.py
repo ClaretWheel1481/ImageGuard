@@ -6,9 +6,10 @@ from torchvision import datasets, models, transforms
 from PIL import ImageFile, Image
 from tqdm import tqdm
 from torch.utils.data import DataLoader
+from efficientnet_pytorch import EfficientNet
+
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 
-# FIXME：目前存在严重的数据集不平衡问题，待解决!!!
 # 自定义ImageFolder类以跳过无效图像
 class CustomImageFolder(datasets.ImageFolder):
     def __getitem__(self, index):
@@ -31,19 +32,26 @@ def pil_loader(path):
         print(f"Failed to load image {path}: {e}")
         return None
 
-# TODO: 计算图片标准差、均值
-
 # 数据预处理
+# ImageNet标准归一化参数
+mean = [0.485, 0.456, 0.406]
+std = [0.229, 0.224, 0.225]
+
 data_transforms = {
     'train': transforms.Compose([
-        transforms.Resize(1099),
-        transforms.RandomResizedCrop(1099, scale=(0.8, 1.0), ratio=(3/4, 4/3)),
+        transforms.Resize(256),
+        transforms.RandomResizedCrop(224, scale=(0.6, 1.0)),
         transforms.RandomHorizontalFlip(),
+        transforms.RandomRotation(15),
+        transforms.ColorJitter(brightness=0.2, contrast=0.2),
         transforms.ToTensor(),
+        transforms.Normalize(mean, std)
     ]),
     'val': transforms.Compose([
-        transforms.Resize(1099),
+        transforms.Resize(256),
+        transforms.CenterCrop(224),
         transforms.ToTensor(),
+        transforms.Normalize(mean, std)
     ]),
 }
 
@@ -60,19 +68,40 @@ class_names = train_dataset.classes
 print(class_names)
 
 # 构建模型
+# class ImageGuard(nn.Module):
+#     def __init__(self):
+#         super(ImageGuard, self).__init__()
+#
+#         # RESNET50
+#         self.base_model = models.resnet50(weights=models.ResNet50_Weights.IMAGENET1K_V1)
+#         self.base_model.fc = nn.Sequential(
+#             nn.Linear(self.base_model.fc.in_features, 512),
+#             nn.ReLU(),
+#             nn.Dropout(0.5),
+#             nn.Linear(512, 2),
+#             # TODO: 目前只有两种分类，不使用Softmax
+#             # nn.Softmax(dim=1)
+#         )
+#
+#     def forward(self, x):
+#         return self.base_model(x)
+
+# 构建模型(EfficientNet)
 class ImageGuard(nn.Module):
-    def __init__(self):
+    def __init__(self, num_classes=2):
         super(ImageGuard, self).__init__()
 
-        # RESNET50
-        self.base_model = models.resnet50(weights=models.ResNet50_Weights.IMAGENET1K_V1)
-        self.base_model.fc = nn.Sequential(
-            nn.Linear(self.base_model.fc.in_features, 512),
-            nn.ReLU(),
-            nn.Dropout(0.5),
-            nn.Linear(512, 2),
-            # TODO: 目前只有两种分类，不使用Softmax
-            # nn.Softmax(dim=1)
+        self.base_model = EfficientNet.from_pretrained('efficientnet-b3')
+
+        # 获取原始分类层的输入特征数
+        in_features = self.base_model._fc.in_features
+
+        # 替换全连接层
+        self.base_model._fc = nn.Sequential(
+            nn.Linear(in_features, 1024),
+            nn.SiLU(),  # EfficientNet常用Swish激活（SiLU是PyTorch实现）
+            nn.Dropout(0.3),
+            nn.Linear(1024, num_classes)
         )
 
     def forward(self, x):
@@ -84,9 +113,10 @@ model = ImageGuard()
 criterion = nn.CrossEntropyLoss()
 
 # 优化器
-# TODO: Adam优化器相对更稳定，RMSprop需要控制学习率，未来调优
-optimizer = optim.Adam(model.parameters(), lr=0.002)
-# optimizer = optim.RMSprop(model.parameters(), lr=0.002, weight_decay=1e-5)
+optimizer = optim.Adam(model.parameters(), lr=1e-4, weight_decay=1e-4)
+
+# 学习率衰减
+scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=5, gamma=0.1)
 
 # 训练模型
 def train_model(model, criterion, optimizer, num_epochs):
