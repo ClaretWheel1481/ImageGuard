@@ -67,25 +67,6 @@ dataset_sizes = {'train': len(train_dataset), 'val': len(val_dataset)}
 class_names = train_dataset.classes
 print(class_names)
 
-# 构建模型
-# class ImageGuard(nn.Module):
-#     def __init__(self):
-#         super(ImageGuard, self).__init__()
-#
-#         # RESNET50
-#         self.base_model = models.resnet50(weights=models.ResNet50_Weights.IMAGENET1K_V1)
-#         self.base_model.fc = nn.Sequential(
-#             nn.Linear(self.base_model.fc.in_features, 512),
-#             nn.ReLU(),
-#             nn.Dropout(0.5),
-#             nn.Linear(512, 2),
-#             # TODO: 目前只有两种分类，不使用Softmax
-#             # nn.Softmax(dim=1)
-#         )
-#
-#     def forward(self, x):
-#         return self.base_model(x)
-
 # 构建模型(EfficientNet)
 class ImageGuard(nn.Module):
     def __init__(self, num_classes=2):
@@ -131,17 +112,21 @@ def train_model(model, criterion, optimizer, num_epochs):
             images = images.to(device)
             labels = labels.to(device)
 
-            with torch.set_grad_enabled(True):
-                outputs = model(images)
-                loss = criterion(outputs, labels)
-                optimizer.zero_grad()
-                loss.backward()
-                optimizer.step()
+            optimizer.zero_grad()
+            outputs = model(images)
+            loss = criterion(outputs, labels)
+            loss.backward()
+            optimizer.step()
 
             running_loss += loss.item() * images.size(0)
 
+            # 获取当前batch中各类别样本的数量
+            unique_labels, counts = torch.unique(labels, return_counts=True)
+            batch_classes = ", ".join([f"{class_names[label.item()]}: {count.item()}"
+                                       for label, count in zip(unique_labels, counts)])
+
             loop.set_description(f'Epoch [{epoch + 1}/{num_epochs}]')
-            loop.set_postfix(loss=running_loss / dataset_sizes['train'])
+            loop.set_postfix(loss=running_loss / dataset_sizes['train'], classes=batch_classes)
 
         validate_model(model)
 
@@ -173,7 +158,7 @@ if __name__ == "__main__":
     print("开始训练")
     print("-" * 20)
     # 训练轮数
-    epochs = 10
+    epochs = 2
     model = train_model(model, criterion, optimizer, epochs)
     if not os.path.exists('model'):
         os.makedirs('model')

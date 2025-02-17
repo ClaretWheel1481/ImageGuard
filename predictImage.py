@@ -35,5 +35,5 @@ model.load_state_dict(torch.load('model/image_guard_v2.pth', map_location=device
 model = model.to(device)
 
 # 调用预测函数
-image_path = 'data/validation/porn/[www.google.com][18585].jpg'
+image_path = 'data/validation/porn/[www.google.com][10382].jpg'
 predict_image(image_path, model, class_names)
