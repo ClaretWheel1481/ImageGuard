@@ -60,8 +60,8 @@ train_dataset = CustomImageFolder('dataset', transform=data_transforms['train'],
 val_dataset = CustomImageFolder('data/validation', transform=data_transforms['val'], loader=pil_loader)
 
 # TODO: 根据显存大小调整Batch_size
-train_loader = DataLoader(train_dataset, batch_size=16, shuffle=True)
-val_loader = DataLoader(val_dataset, batch_size=16, shuffle=False)
+train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
+val_loader = DataLoader(val_dataset, batch_size=32, shuffle=False)
 
 dataset_sizes = {'train': len(train_dataset), 'val': len(val_dataset)}
 class_names = train_dataset.classes
@@ -158,7 +158,7 @@ if __name__ == "__main__":
     print("开始训练")
     print("-" * 20)
     # 训练轮数
-    epochs = 2
+    epochs = 20
     model = train_model(model, criterion, optimizer, epochs)
     if not os.path.exists('model'):
         os.makedirs('model')

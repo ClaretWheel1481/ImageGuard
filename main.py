@@ -4,7 +4,6 @@ from PIL import Image
 from flask import Flask, request, jsonify
 from trainModel import ImageGuard, class_names
 
-# 初始化 Flask 应用（注意不要与模型类同名，这里用 app 表示）
 app = Flask(__name__)
 
 # ImageNet 标准归一化参数
@@ -21,10 +20,10 @@ preprocess = transforms.Compose([
 
 # 加载模型
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-model = ImageGuard()  # 实例化模型
+model = ImageGuard()
 model.load_state_dict(torch.load('model/image_guard_v2.pth', map_location=device, weights_only=True))
 model = model.to(device)
-model.eval()  # 设置为评估模式
+model.eval()
 
 def predict_image_from_pil(img):
     """
