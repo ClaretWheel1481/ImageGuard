@@ -25,12 +25,12 @@ def download_dataset(urls_file, save_dir):
     create_directory(save_dir)
     with open(urls_file, 'r') as f:
         urls = f.read().splitlines()
-    with ThreadPoolExecutor(max_workers=256) as executor:
+    with ThreadPoolExecutor(max_workers=12) as executor:
         for url in urls:
             executor.submit(download_image, url, save_dir)
 
 def download_all_datasets():
-    datasets = ['porn']
+    datasets = ['neutral','porn']
     for dataset in datasets:
         urls_file = f'data/train/{dataset}/urls_{dataset}.txt'
         save_dir = f'dataset/{dataset}'
