@@ -1,0 +1,7 @@
+efficientnet_pytorch==0.7.1
+Flask==3.1.0
+Pillow==11.1.0
+Requests==2.32.3
+torch==2.6.0+cu126
+torchvision==0.21.0+cu126
+tqdm==4.67.1
