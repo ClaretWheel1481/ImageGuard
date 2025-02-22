@@ -37,7 +37,7 @@ def predict_image_from_pil(img):
         _, predicted = torch.max(outputs, 1)
     return class_names[predicted[0].item()]
 
-@app.route('/api/v1/predict', methods=['POST'])
+@app.route('/api/v1/image/predict', methods=['POST'])
 def predict():
     """
     接口说明：
@@ -57,6 +57,10 @@ def predict():
         return jsonify({'prediction': prediction})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v1/image/predict', methods=['GET'])
+def ping():
+    return jsonify({'status': 'ok'})
 
 if __name__ == '__main__':
     # 启动 Flask 服务
