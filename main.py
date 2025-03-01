@@ -1,8 +1,12 @@
+import threading
+import time
+
 import torch
 from torchvision import transforms
 from PIL import Image
 from flask import Flask, request, jsonify
 from trainModel import ImageGuard, class_names
+from consul import Consul
 
 app = Flask(__name__)
 
@@ -62,10 +66,47 @@ def predict():
 def ping():
     return jsonify({'status': 'ok'})
 
+def register_service_with_consul():
+    """
+    注册 Flask 服务到 Consul
+    """
+    consul = Consul()
+
+    service_id = "ImageGuard-1"
+    service_name = "ImageGuard"
+    service_port = 37887
+    service_address = "127.0.0.1"
+    health_check_url = f"http://{service_address}:{service_port}/api/v1/image/predict"
+
+    consul.agent.service.register(
+        service_name,
+        service_id=service_id,
+        port=service_port,
+        address=service_address,
+        tags=["flask", "predictor"],
+        check={
+            "http": health_check_url,
+            "interval": "20s",
+            "timeout": "5s"
+        }
+    )
+    print(f"Service {service_name} registered with Consul")
+
+    try:
+        while True:
+            time.sleep(100)
+    except KeyboardInterrupt:
+        consul.agent.service.deregister(service_id)
+        print(f"Service {service_name} deregistered from Consul")
+
 if __name__ == '__main__':
-    # 启动 Flask 服务
+    # 若不需要consul服务，则注释掉以下代码
+    consul_thread = threading.Thread(target=register_service_with_consul)
+    consul_thread.daemon = True
+    consul_thread.start()
+    ##########################################
     app.run(
-        port=37882,
+        port=37887,
         debug=False,
         threaded=False,
         host='127.0.0.1'
